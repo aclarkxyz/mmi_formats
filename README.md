@@ -19,4 +19,4 @@ In its basic form, the format is roughly equivalent to the industry standard *SD
 The *XML datasheet* format defines a header extension mechanism which allows the specification of *Aspects*, which are essentionally optional meta-instructions about how to compose the row/column content that makes up the datasheet. This is a mechanism to add functionality for describing more complex concepts, such as reactions, scaffolding patterns, measurement units, assay information, and anything else that is worth implementing. The extension pattern is implemented in a backward-compatible way such that tools that do not understand the extensions can still be used to view and edit the content without necessarily causing problems.
 
 * Specific [description of the format](datasheet/README.md)
-* Detailed [description of aspect extensions](aspects/README.md)
+* Detailed [description of aspect extensions](aspect/README.md)
