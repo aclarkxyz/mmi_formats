@@ -66,7 +66,7 @@ The basic format is straightforward: `{component}{type}{index}`, where reactants
 
 Stoichiometry values are stored as formatted strings. Any non-negative numeric value is valid, as is a ratio, e.g. "1/3". Null values imply the default stoichiometry, which is "1". A value of "0" is taken to mean that the component is not stoichiometric.
 
-A reaction datasheet can have any number of rows, and each row represents one reaction. Because these reactions do not necessarily have the same number of components, the component counts defined in the metadata actually indicate the maximum number of components. For example, if there are 2 rows/reactions, and the first reaction has 2 products, while the second reaction has just one, the aspect definition will contain the line nproducts=2, but the second reaction leaves the second product blank, e.g.
+A reaction datasheet can have any number of rows, and each row represents one reaction. Because these reactions do not necessarily have the same number of components, the component counts defined in the metadata actually indicate the maximum number of components. For example, if there are 2 rows/reactions, and the first reaction has 2 products, while the second reaction has just one, the aspect definition will contain the line `nproducts=2`, but the second reaction leaves the second product blank, e.g.
 
 ![snap4](fmtaspect_snap04.png)
 

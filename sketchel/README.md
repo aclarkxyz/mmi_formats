@@ -18,9 +18,9 @@ Because the format is minimalistic, and all of the features have a well defined 
 
 *  Whitespace padding should never be used.
 
-*  With the exception of separators, all characters which are not pure ASCII, or are control codes (in the range 0 .. 31), or are one of the following forbidden characters: space ( ), backslash (\\), comma (,) semicolon (;) or equals (=), must be replaced with an escape code.
+*  With the exception of separators, all characters which are not pure ASCII, or are control codes (in the range 0 .. 31), or are one of the following forbidden characters: space (` `), backslash (`\\`), comma (`,`) semicolon (`;`) or equals (`=`), must be replaced with an escape code.
 
-* The escape code syntax is: \hhhh, where the four digits following the backslash are hexadecimal encoding for a 2-byte unicode character. Thus, some of the otherwise unavailable characters are encoded as:
+* The escape code syntax is: `\hhhh`, where the four digits following the backslash are hexadecimal encoding for a 2-byte unicode character. Thus, some of the otherwise unavailable characters are encoded as:
 
 ```
 \0020  space
@@ -34,7 +34,7 @@ Because the format is minimalistic, and all of the features have a well defined 
 
 * There is no limit to line length. Readers should not use a fixed line size.
 
-* The first 9 bytes of the format must correspond to the ASCII "SketchEl!" (hex: 53 6b 65 74 63 68 45 6c 21), which is the recognition string.
+* The first 9 bytes of the format must correspond to the ASCII "`SketchEl!`" (hex: 53 6b 65 74 63 68 45 6c 21), which is the recognition string.
 
 # Outline
 
@@ -63,17 +63,17 @@ SketchEl!({#atoms},{#bonds})
 
 * Any number of data entries can follow on an atom line, but each of them must begin with a single character prefix, which describes what type of data follows, i.e. the whole field is appended to the line as: `,{id}{content}`. If the content contains forbidden characters, they must be escaped out. Values of `{id}` are all reserved for official fields to be added at a later date. The currently available values are:
 
- * i: the calculated implicit hydrogen count. When encountered, it means that the implicit hydrogen count is unconstrained, and that the number of implicit hydrogen atoms should be recalculated every time its state changes. For example, a methyl substituent has 3 implicit hydrogens, but if it is singly bonded to another carbon, the sketcher application should decrement this number, for convenience. The normal field value for methyl would be i3, which shows the most recently calculated number of implicit hydrogens. The number is included, so that reader applications are not forced to derive their own implicit hydrogen counting algorithm, and can merely read out the correct value.
+ * `i`: the calculated implicit hydrogen count. When encountered, it means that the implicit hydrogen count is unconstrained, and that the number of implicit hydrogen atoms should be recalculated every time its state changes. For example, a methyl substituent has 3 implicit hydrogens, but if it is singly bonded to another carbon, the sketcher application should decrement this number, for convenience. The normal field value for methyl would be i3, which shows the most recently calculated number of implicit hydrogens. The number is included, so that reader applications are not forced to derive their own implicit hydrogen counting algorithm, and can merely read out the correct value.
 
- * e: the explicit hydrogen count, which supercedes the implicit count. The presence of this field means that the user has specified the exact number of additional hydrogens which reside on the atom, and that this number is not open for interpretation, even if the environment of the atom changes.
+ * `e`: the explicit hydrogen count, which supercedes the implicit count. The presence of this field means that the user has specified the exact number of additional hydrogens which reside on the atom, and that this number is not open for interpretation, even if the environment of the atom changes.
 
- * n: the mapping index number, which is an arbitrary integer, which has an implied value of 0 if absent. Referring selected atoms to some alternate numbering scheme, for external purposes, is commonly useful.
+ * `n`: the mapping index number, which is an arbitrary integer, which has an implied value of 0 if absent. Referring selected atoms to some alternate numbering scheme, for external purposes, is commonly useful.
 
- * m: the isotope mass, which is an integer that should correspond to the integer mass of the singular nucleus type, e.g. 2 for deuterium, 13 for carbon-13, etc. The default value, 0, means that the atoms are statistically distributed according to natural abundance.
+ * `m`: the isotope mass, which is an integer that should correspond to the integer mass of the singular nucleus type, e.g. 2 for deuterium, 13 for carbon-13, etc. The default value, 0, means that the atoms are statistically distributed according to natural abundance.
 
- * x: invariant expansion field. The value of the content should be ignored, unless the application recognises header codes that it understands. There is no specific convention for embedding atom-specific data, but it is prudent to include the name of the application responsible for the extra field, e.g. `x$SOMEPROGRAM$SUBSTITUENT#1234`. An application which reads a SketchEl file should retain all of these expansion fields, associated with the original atoms, unless the atom is actually deleted. This expansion field is used for data which is not dependent on the entire molecule.
+ * `x`: invariant expansion field. The value of the content should be ignored, unless the application recognises header codes that it understands. There is no specific convention for embedding atom-specific data, but it is prudent to include the name of the application responsible for the extra field, e.g. `x$SOMEPROGRAM$SUBSTITUENT#1234`. An application which reads a SketchEl file should retain all of these expansion fields, associated with the original atoms, unless the atom is actually deleted. This expansion field is used for data which is not dependent on the entire molecule.
 
- * y: dependent expansion field. As for x, except that the properties of this field are tied to the whole molecule. If the reader program does not recognise the expansion field, and the data is modified, then this property must be invalidated. For example, storing calculated partial charge might be done with `y$TOPOLOGICAL$PARTIAL_CHARGE=0.3327`. If the structure is modified, then the field is no longer valid, and so it must be deleted.
+ * `y`: dependent expansion field. As for x, except that the properties of this field are tied to the whole molecule. If the reader program does not recognise the expansion field, and the data is modified, then this property must be invalidated. For example, storing calculated partial charge might be done with `y$TOPOLOGICAL$PARTIAL_CHARGE=0.3327`. If the structure is modified, then the field is no longer valid, and so it must be deleted.
 
  * All other single-character field prefixes are reserved for future use. Unrecognised expansion fields should be treated in the same way as x, i.e. the value should be preserved, unless the atom is deleted.
 
@@ -131,7 +131,7 @@ Consider the following example of butylbenzene:
 
 Structure (a) shows the all heavy atom structure, while structure (b) shows the representation which uses Bu to represent the butyl substituent, and (c) shows the definition of the abbreviation.
 
-The *SketchEl* format representation of (b) is encoded as follows:
+The SketchEl format representation of (b) is encoded as follows:
 
 ```
 SketchEl!(7,7)
@@ -183,7 +183,7 @@ Optional query properties can be specified for atoms and bonds. These are indica
 
 ## Special Deals
 
-When a *SketchEl* molecule is being used as a query rather than the description of a molecule, some of the ordinary molecular properties are interpreted differently.
+When a SketchEl molecule is being used as a query rather than the description of a molecule, some of the ordinary molecular properties are interpreted differently.
 
 * **Atom Symbol**: Element symbols are matched literally by default, which includes non-element labels (e.g. a query value of X will only match a target element labelled X). The exception is the wildcard symbol - * - which is defined to be a match for all elements.
 
@@ -230,11 +230,8 @@ Many of the query features are specified as a whitelist, i.e. if any of the valu
 * `qI:` Isotope: A list of permitted isotopes. These are absolute nucleon counts, for example `qI:13,14` matches two less common isotopes of carbon.
 
 * `qX:` Subfragment: The content of the query parameter is an inline structure, encoded in much the same way as an abbreviation. For example, to make sure that the current atom is compatible with being a nitrogen atom with at least one carbon sigma bound to it:
-
-* `qX:` 
-```
-SketchEl!(2\002C1)\000AN\003D-0.5000\002C-0.4500\003B0\002C0\002Ci2\000AC\003D0.2500\002C-1.7490\003B0\002C0\002Ci3\000A1-2\003D1\002C0\000A!End\000A
-```
+`qX:SketchEl!(2\002C1)\000AN\003D-0.5000\002C-0.4500\003B0\002C0\002Ci2\000AC\003D0.2500\002C-1.7490\003B0\002C0\002Ci3\000A1-2\003D1\002C0\000A!End\000A
+`.
 The expanded definition of the fragment is:
 ```
 SketchEl!(2,1)
@@ -252,7 +249,7 @@ Unlike most of the query features, there can be any number of subfragments, and 
 
 * `qR:` Small Rings: A comma separated list of small ring sizes, of which the bond must be a member of at least one. For example, `qR:5,6` implies that the bond must be in any 5- or 6-membered ring. If it is in no ring, or the rings that it is a member of are not of size 5 or 6, the bond does not match.
 
-* `qR!` Exclude Rings: A comma separated list of small ring sizes which the bond may not be a member of. For example, qR!7 means that the atom may not be in a 7-membered ring, but any other size is fine.
+* `qR!` Exclude Rings: A comma separated list of small ring sizes which the bond may not be a member of. For example, `qR!7` means that the atom may not be in a 7-membered ring, but any other size is fine.
 
 * `qB:`	Ring Block: A boolean flag, where yes indicates that the bond must be in a ring of any size (including macrocyclic rings), whereas no requires that it is not in any kind of ring. When this feature is omitted, the match is not conditional on whether the bond is in a ring or not. Note that a bond is not considered to be in a ring block if it links two separate ring systems, e.g. the joining bond of biphenyl is not considered to be in a ring block, unless the two rings were in turn enclosed within a larger macrocycle.
 
@@ -297,7 +294,7 @@ The SketchEl molecule format does not prescribe a method for calculating implici
 
 2. Specific. The user has indicated exactly how many hydrogens are attached to the atom, and this will not be modified.
 
-The actual hydrogen-count formulae used for *SketchEl* are:
+The actual hydrogen-count formulae used for SketchEl are:
 
 * **C**:	4 - |charge| - unpaired - Σ bondorder
 * **N, P**:	3 + charge - unpaired - Σ bondorder
