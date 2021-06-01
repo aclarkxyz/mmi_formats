@@ -257,6 +257,133 @@ Unlike most of the query features, there can be any number of subfragments, and 
 
 * `qO:` Bond Orders: A list of allowed bond orders, which overrides the structure's given bond order. For matching purposes, aromatic bonds are assigned an order of -1. A query feature of `qO:-1,0,1,2,3,4,5,6` will match any bond that is (arguably) known to chemistry. Useful combinations include `qO:-1,1,2`, which will match a bond that was classified as aromatic, or part of the alternating single/double pattern that did not satisfy the strict definition of resonance interconversion.
 
+# Polymers
+
+Polymer blocks are an optional extension that is layered into the atom and bond extensions, with the prefix `xPOLYMER:`. An example of a very simple polymer _polyethylene_ can be written as:
+
+```
+SketchEl!(4,3)
+*=-8.2750,6.9500;0,0,i0
+C=-6.9760,6.2000;0,0,i2,xPOLYMER:1:2
+C=-5.6769,6.9500;0,0,i2,xPOLYMER:1:2
+*=-4.3779,6.2000;0,0,i0
+1-2=1,0
+2-3=1,0
+3-4=1,0
+!End
+```
+
+![polymer1](fmtsketchel_polymer1.png)
+
+The molecule can have some number of _blocks_ and each one is identified by a number that is 1 or greater, normally indexed consecutively, but this is not a requirement. Every atom that is part of the inner block must be labelled with the extension field `xPOLYMER:n:b` where _n_ is the block's index and _b_ is the number of attachment bonds sticking out of the block (which is used as a checksum). Note that any bond that has one atom in the block and one not is defined to be a connecting atom: the ethylene polymer above is described using 4 atoms, two of which are wildcards and are connected to the block, rather than being a part of it.
+
+Note the degeneracy in the polymer label: each atom in a block is tagged in the same way.
+
+## Capping Groups
+
+For some polymer descriptions the capping groups are not well defined, and the way to represent the capping functionality is to use a placeholder with the element set to `*`. In many straightforward cases the capping functional groups may be known based on the reaction conditions, and they can be specified as appended to the block, e.g.
+
+![polymer2](fmtsketchel_polymer2.png)
+
+## Linear Ordering
+
+By default the order in which atoms should be connected to each other to make up an oligomer is undefined. For symmetrical linear blocks this is sufficient, but it is often appropriate to be explicit about orientation. There are three optional tags that can apply for polymer blocks with exactly two attachment points: head-to-head, head-to-tail and random. These are annotated by adding `hh`, `ht` or `rnd` to the polymer definition for each atom.
+
+The most regular form of _polypropylene_ is shown below, with ordered head-to-tail orientation and stereoregularity:
+
+![polymer3](fmtsketchel_polymer3.png)
+
+```
+SketchEl!(5,4)
+*=-8.2750,6.9500;0,0,i0
+C=-6.9760,6.2000;0,0,i2,xPOLYMER:1:2:ht
+C=-5.6769,6.9500;0,0,i1,xPOLYMER:1:2:ht
+C=-5.6769,8.4500;0,0,i3,xPOLYMER:1:2:ht
+*=-4.3779,6.2000;0,0,i0
+1-2=1,0
+2-3=1,0
+3-4=1,1
+3-5=1,0
+!End
+```
+
+## 2x2 Orientation
+
+Polymers where each chain unit has a pair of bonds ("ladder polymers") can be marked as having a paired nature, for example:
+
+![polymer4](fmtsketchel_polymer4.png)
+
+```
+SketchEl!(12,12)
+O=-2.7750,6.0750;0,0,i0,xPOLYMER:1:4
+C=-4.0740,5.3250;0,0,i1,xPOLYMER:1:4
+C=-4.0740,3.8250;0,0,i1,xPOLYMER:1:4
+N=-2.7750,3.0750;0,0,i1,xPOLYMER:1:4
+C=-1.4760,3.8250;0,0,i1,xPOLYMER:1:4
+C=-1.4760,5.3250;0,0,i1,xPOLYMER:1:4
+C=-5.3731,6.0750;0,0,i3
+C=-5.3731,3.0750;0,0,i3
+C=-0.1769,6.0750;0,0,i2,xPOLYMER:1:4
+C=-0.1769,3.0750;0,0,i2,xPOLYMER:1:4
+C=1.1221,3.8250;0,0,i3
+C=1.1221,5.3250;0,0,i3
+1-2=1,0
+2-3=1,0
+3-4=1,0
+4-5=1,0
+5-6=1,0
+6-1=1,0
+2-7=1,0,xPOLYMER:1:1
+3-8=1,0,xPOLYMER:1:2
+6-9=1,0
+5-10=1,0
+10-11=1,0,xPOLYMER:1:4
+9-12=1,0,xPOLYMER:1:3
+!End
+```
+
+The polymer block has 8 atoms in it, with 4 outgoing connections. The connectivity of the ladder polymer is symmetrical, i.e. the attachment points 7 and 8 are reconnected to 9 and 10 respectively, and not in any other configuration. This is encoded within the bonding section, where the prefix is represented as `XPOLYMER:1:z` where _z_ is the order in the sequence of (1 and 2 are on one side, 3 and 4 are on the other side).
+
+This notation is only applicable to polymer blocks that have 4 outgoing connections.
+
+## Named Connections
+
+While many polymers can be expressed by using one or more repeating blocks, there are some sequence combinations which have more complex options. Many of these polymers can be represented by naming connecting atoms (with an arbitrary index), and then for outgoing bonds, indicating which connections are valid using an inclusion or exclusion list. For example, the top representation in the following diagram is a straightforward way to encode two head-to-tail polymers which can expand in either direction:
+
+![polymer5](fmtsketchel_polymer5.png)
+
+The second diagram uses named attachments to achieve the same effect, and has the following content:
+
+
+```
+SketchEl!(9,7)
+*=-12.1995,3.0238;0,0,i0
+C=-10.9005,3.7738;0,0,i2,xPOLYMER:1:2:n1
+C=-9.6015,3.0238;0,0,i2,xPOLYMER:1:2:n2
+*=-8.3024,3.7738;0,0,i0
+C=-6.0034,3.7738;0,0,i2,xPOLYMER:2:2:n3
+C=-4.7043,3.0238;0,0,i2,xPOLYMER:2:2
+O=-3.4053,3.7738;0,0,i0,xPOLYMER:2:2:n4
+*=-7.3024,3.0238;0,0,i0
+*=-2.1063,3.0238;0,0,i0
+1-2=1,0,xPOLYMER:1:i2
+2-3=1,0
+3-4=1,0,xPOLYMER:1:i1\002C3
+5-6=1,0
+6-7=1,0
+5-8=1,0,xPOLYMER:2:i2\002C4
+7-9=1,0,xPOLYMER:2:i3
+!End
+```
+
+There are 4 atoms in the 2 blocks that bound the exterior, and these are indicated by adding the `:n` suffix to the polymer marking on the atom. An atom can have more than one name, and these are comma separated, with standard encoding (e.g. being named 1 and 2 would be encoded as `:n1\002C2`). Name indices do not need to be unique.
+
+For connecting up names, the bonds need to be labelled. To indicate a list of atoms that the outgoing bond must choose between, append with `:i` followed by a list of all available names, e.g. if 1 and 3 are both valid connections, this would be `:i1\002C3`. To use an exclusion list, the `:e` suffix is used instead: this means that atoms that would otherwise have been allowed no longer are.
+
+## Notes
+
+An atom can be part of more than one polymer block (a unit within a unit), though this adds additional burden on any algorithm designed to enumerate valid oligomers.
+
 # Considerations
 
 ## Bond orders
